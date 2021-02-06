@@ -1,8 +1,8 @@
-# Getting Started with Create React App
+# React Playground
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## To run
 
 In the project directory, you can run:
 
@@ -14,57 +14,20 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+https://www.igvita.com/2015/11/20/dont-lose-user-and-app-state-use-page-visibility/
 
-### `npm run build`
+Tested running react app locally on port 3000 and hitting an express-graphql server running locally on port 8080.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The app sets a global window variable called `PLAYGROUND`.
+On page close it calls a function on this variable, which will make a request to a graphql server running on port 8080.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1. We need to use sendBeacon to send the mutation on page close because:
+    1. We can see the Apollo client calls when you switch tabs
+    2. Not when you close the tab
+    3. With beacon we can see both.
+    4. Problem with sendBeacon and cors - when you change to application/json (this shouldn’t be a problem when you’re not on localhost) https://github.com/w3c/beacon/issues/10#issuecomment-169792139
+2. Logic around if this has already been called doesn’t really work because it will fire when you change tabs. BUT you also want it to fire when you close the page. So the server needs to handle the mutation happening multiple times. (Also - is it ok for this to happen on tab change??)
+    1. If we add another function to the api classes (or flag sent to commit) that would then use the beacon in the data model, this can do the checking if we’ve already sent the same data.
+3. Or we could add a new endpoint in our service to handle a beacon request coming as text that we can then translate to the graphql mutation for the Apollo client to to call
