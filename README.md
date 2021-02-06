@@ -30,6 +30,7 @@ On page close it calls a function on the `PLAYGROUND` variable. This will make a
     1. Not when you close the tab
     1. With beacon we can see both.
 1. Problem with `sendBeacon` and cors - when you change to application/json (this shouldn’t be a problem when you’re not on localhost) https://github.com/w3c/beacon/issues/10#issuecomment-169792139
+    1. By default `sendBeacon` sends a `Content-type: text/plain` header, which will be rejected by the graphql service (note the mutation we are trying to send should look like what is produced from this `curl` command: `curl -X POST -H "Content-Type: application/json" --data '{ "query": "mutation { printMessage(message: \"hello\") }" }' http://localhost:8080/`). To change the `Content-type` we have to use a blob (see https://stackoverflow.com/questions/40523469/navigator-sendbeacon-to-pass-header-information)
     1. If this is an issue we can add a new endpoint in the service to handle a beacon request with plain text and translate that to the graphql mutation and call via the Apollo client (NOT TESTED)
 1. Adding logic around if the function has already been called doesn’t really work. The function fires when you change tabs, but you also want it to fire when you close the page. Plus Safari doesn't fire the `visibilitychange` event on page close so you need to add a `pagehide` handler anyway.
     1. So the server needs to handle the mutation happening multiple times (ASSUMPTION: it is ok for this mutation to be sent on tab change)
