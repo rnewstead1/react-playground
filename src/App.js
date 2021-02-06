@@ -1,14 +1,9 @@
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
 import logo from './logo.svg';
 import './App.css';
 import { Playground } from './components/Playground'
 
-const client = new ApolloClient({
-  uri: 'http://localhost:8080',
-  cache: new InMemoryCache()
-});
-
-function App() {
+function App({ client }) {
   return (
     <ApolloProvider client={client}>
       <div className="App">
