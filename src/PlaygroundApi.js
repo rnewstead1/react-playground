@@ -18,10 +18,11 @@ const testConnection = gql`
 export default class PlaygroundApi {
     constructor(apolloClient) {
         this._apolloClient = apolloClient;
+        this._ownData = 'something';
     }
 
-    doThing(message) {
-        console.log('Called Do Thing');
+    callGraphqlApi(message) {
+        console.log('In callGraphqlApi');
         // this._apolloClient
         //     .mutate({
         //         mutation: printMessage,
@@ -29,7 +30,7 @@ export default class PlaygroundApi {
         //             message
         //         },
         //     })
-        const query = { "query": "mutation { printMessage(message: \"" + message + "\") }" };
+        const query = { query: `mutation { printMessage(message: "${message} ${this._ownData}") }` };
         const blob = new Blob([JSON.stringify(query)], { type : 'application/json' })
         navigator.sendBeacon('http://localhost:8080', blob);
     }

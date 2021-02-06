@@ -3,14 +3,15 @@ import PlaygroundApi from '../PlaygroundApi';
 
 export const Playground = ({ client }) => {
   useEffect(() => {
-    window.PLAYGROUND = new PlaygroundApi(client);
+    const playgroundApi = new PlaygroundApi(client);
+    window.PLAYGROUND = playgroundApi;
 
     function onUnload(e) {
         if (e.type === 'pagehide') {
-            window.PLAYGROUND.doThing('Sending stuff ' + new Date().toISOString())
+            playgroundApi.callGraphqlApi('Sending at ' + new Date().toISOString())
         }
         if (e.type === 'visibilitychange' && document.visibilityState === 'hidden') {
-            window.PLAYGROUND.doThing('Sending stuff ' + new Date().toISOString())
+            playgroundApi.callGraphqlApi('Sending at ' + new Date().toISOString())
         }
     }
     document.addEventListener("visibilitychange", onUnload);
