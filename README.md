@@ -23,6 +23,8 @@ Tested running react app locally on port 3000 and hitting an [express-graphql se
 The app sets a global window variable called `PLAYGROUND`.
 On page close it calls a function on the `PLAYGROUND` variable. This will make a request to a graphql server running on port 8080 using the [beacon api](https://developer.mozilla.org/en-US/docs/Web/API/Beacon_API).
 
+## Notes
+
 1. We need to use `navigator.sendBeacon` to send the mutation on page close because:
     1. We can see the Apollo client calls when you switch tabs
     1. Not when you close the tab
