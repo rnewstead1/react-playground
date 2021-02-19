@@ -1,13 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { createHttpLink } from 'apollo-link-http';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 const client = new ApolloClient({
-  uri: 'http://localhost:8080',
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
+  link: createHttpLink({
+    uri: 'http://localhost:8080',
+    fetchOptions: { keepalive: true }
+  }),
 });
 
 ReactDOM.render(

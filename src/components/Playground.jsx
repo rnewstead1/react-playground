@@ -1,25 +1,43 @@
 import React, { useEffect } from 'react';
-import PlaygroundApi from '../PlaygroundApi';
+import { gql } from "@apollo/client";
+
+const printMessage = gql`
+  mutation printMessage($message: String!) {
+    printMessage(message: $message)
+  }
+`;
 
 export const Playground = ({ client }) => {
-  useEffect(() => {
-    const playgroundApi = new PlaygroundApi(client);
-    window.PLAYGROUND = playgroundApi;
+  function sendRequest(message) {
+    // send request using browser fetch
+    client.mutate({
+      mutation: printMessage,
+      variables: {
+        message: `FETCH: ${message}`
+      },
+    })
 
-    function onUnload(e) {
-        if (e.type === 'pagehide') {
-            playgroundApi.callGraphqlApi('Sending at ' + new Date().toISOString())
-        }
-        if (e.type === 'visibilitychange' && document.visibilityState === 'hidden') {
-            playgroundApi.callGraphqlApi('Sending at ' + new Date().toISOString())
-        }
+    // send request using beacon
+    const query = { query: `mutation { printMessage(message: "BEACON: ${message}") }` };
+    const blob = new Blob([JSON.stringify(query)], { type: 'application/json' })
+    navigator.sendBeacon('http://localhost:8080', blob);
+  }
+
+
+  function onUnload(e) {
+    if (e.type === 'pagehide') {
+      sendRequest('pagehide ' + new Date().toISOString())
     }
+    if (e.type === 'visibilitychange' && document.visibilityState === 'hidden') {
+      sendRequest('visibilitychange ' + new Date().toISOString())
+    }
+  }
+  useEffect(() => {
     document.addEventListener("visibilitychange", onUnload);
     window.addEventListener("pagehide", onUnload)
     return () => {
        document.removeEventListener("visibilitychange", onUnload);
-       window.addEventListener("pagehide", onUnload)
-       window.PLAYGROUND = null;
+       window.addEventListener("pagehide", onUnload);
     }
   });
 
