@@ -37,7 +37,7 @@ export const Playground = ({ client }) => {
     window.addEventListener("pagehide", onUnload)
     return () => {
        document.removeEventListener("visibilitychange", onUnload);
-       window.addEventListener("pagehide", onUnload);
+       window.removeEventListener("pagehide", onUnload);
     }
   });
 
